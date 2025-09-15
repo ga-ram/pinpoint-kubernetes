@@ -1,39 +1,3 @@
-### See helm stable chart to apply other settings of MYSQL.
-### Link : https://github.com/helm/charts/tree/master/stable/mysql
-mysql:
-  enable: true
-  # docker image
-  image: "pinpointdocker/pinpoint-mysql"
-  # tag
-  imageTag: "2.1.0"
-
-  ## Specify password for root user
-  ## Default: random 10 character string
-  mysqlRootPassword: root123
-
-  ## Create a database user
-  mysqlUser: admin
-
-  ## Default: random 10 character string
-  mysqlPassword: admin
-
-  ## Create a database
-  mysqlDatabase: pinpoint
-
-  ## Extra Initial Script
-  # initializationFiles:     
-  #   extra_init.sql: |-
-  #     CREATE TABLE ...
-
-### See helm stable chart to apply other settings of Zookeeper.
-### Link : https://github.com/helm/charts/tree/master/incubator/zookeeper
-zookeeper: 
-  enabled: true
-  replicaCount: 1
-  persistence:
-    enabled: true
-    size : 10Gi
-
 ### See helm stable chart to apply other settings of HDFS.
 ### Link : https://github.com/Gradiant/charts/tree/master/charts/hdfs
 hdfs:
@@ -46,21 +10,64 @@ hdfs:
     nameNode:
       enabled: true
       size : "20Gi"
-      
-pinpoint-web:
-  ### If you want to use external MySQL or other settings that are different from default values, fill these fields.
-  ### When the field is empty, it applies the default value.
+
+zookeeper:
+  enabled: true
+
+### If you are using external MySQL, set mysql.enabled: false
+### and then update pinpoint-web.mysql.host and pinpoint-web.mysql.port accordingly.
+mysql:
+  enabled: true
+  imagePullSecrets: []
+  auth:
+    existingSecret: pinpoint-pinpoint-web
+    database: pinpoint
+  primary:
+    livenessProbe:
+      enabled: false
+    readinessProbe:
+      enabled: false
+    startupProbe:
+      enabled: false
+
+pinpoint-batch:
+  ### pinpoint url to use in alarm texts
+  pinpointUrl:
+
+  ### If you want to use external MySQL or other settings that are different from default values,
+  ### uncomment below and fill in these fields.
+  ### If you are using external MySQL, set mysql.enabled: false
   ### Default Value
   ###   mysql.host : pinpoint-mysql
   ###   mysql.port : 3306
-  ###   mysql.user : admin
-  ###   mysql.password : admin
+  ###   mysql.username : root
+  ###   mysql.password : pinpoint
   mysql:
-    host: 
-    port: 
-    user: 
-    password: 
-    database: 
+    createTables: true
+    host:
+    port:
+    username:
+    password:
+
+  ### External zookeeper address (Default : pinpoint-zookeeper)
+  zookeeper:
+    host:
+
+pinpoint-web:
+### If you want to use external MySQL or other settings that are different from default values,
+### uncomment below and fill in these fields.
+### If you are using external MySQL, set mysql.enabled: false
+### Default Value
+###   mysql.host : pinpoint-mysql
+###   mysql.port : 3306
+###   mysql.username : root
+###   mysql.password : pinpoint
+  mysql:
+    createTables: true
+    host:
+    port:
+    username:
+    password:
   
   ### External zookeeper address (Default : pinpoint-zookeeper) 
   zookeeper: 

@@ -1,0 +1,135 @@
+# Default values for pinpoint-batch.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: pinpointdocker/pinpoint-batch
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: 3.0.3
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  type: "LoadBalancer"
+  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  port: 8090
+
+livenessProbe:
+  failureThreshold: 5
+  tcpSocket:
+    port: 8090
+  initialDelaySeconds: 180
+  periodSeconds: 30
+  successThreshold: 1
+  timeoutSeconds: 60
+readinessProbe:
+  failureThreshold: 10
+  tcpSocket:
+    port: 8090
+  initialDelaySeconds: 180
+  periodSeconds: 30
+  successThreshold: 1
+  timeoutSeconds: 60
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+profiles: release
+serverPort: 8090 # todo remove
+pinpointUrl: # Put working URL to pinpoint web ui. e.g.) pinpoint-pinpoint-web-ui.default.svc.cluster.local:8080 or localhost:8080
+
+alarm:
+  enabled: true
+  cron: 0 0/3 * * * *
+
+mail:
+  server:
+    url: smtp.gmail.com
+    port: 587
+    username: username
+    password: password
+  sender: pinpoint_operator@pinpoint.com
+  transportProtocol: smtp
+  debug: false
+  smtp:
+    port: 25
+    auth: false
+    startTls:
+      enable: false
+      required: false
+
+### If you want to use external MySQL or other settings that are different from default values,
+### uncomment below and fill in these fields.
+### If you are using external MySQL, set mysql.enabled: false
+### Default Value
+###   mysql.host : pinpoint-mysql
+###   mysql.port : 3306
+###   mysql.username : root
+###   mysql.password : pinpoint
+#mysql:
+#  createTables: true
+#  host:
+#  port:
+#  username:
+#  password:
+
+zookeeper:
+  host: pinpoint-zookeeper

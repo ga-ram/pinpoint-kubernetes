@@ -6,11 +6,11 @@
 # See this repo for image build details: https://github.com/Comcast/kube-yarn/tree/master/image
 image:
   repository: pinpointdocker/pinpoint-hbase
-  tag: 2.1.0
+  tag: latest
   pullPolicy: IfNotPresent
 
 # The version of the hadoop libraries being used in the image.
-hbaseVersion: 1.2.6
+hbaseVersion: 2.2.6
 
 # Select antiAffinity as either hard or soft, default is 'soft'
 # 'hard' is recommended for higher availaility
@@ -32,6 +32,14 @@ hbase:
       limits:
         memory: "2048Mi"
         cpu: "1000m"
+    readinessProbe:
+      enabled: false
+      initialDelaySeconds: 600
+      timeoutSeconds: 30
+    livenessProbe:
+      enabled: false
+      initialDelaySeconds: 1200
+      timeoutSecnds: 30
   regionServer:
     replicas: 1
     resources:
@@ -41,3 +49,11 @@ hbase:
       limits:
         memory: "2048Mi"
         cpu: "1000m"
+    readinessProbe:
+      enabled: false
+      initialDelaySeconds: 900
+      timeoutSeconds: 30
+    livenessProbe:
+      enabled: false
+      initialDelaySeconds: 1500
+      timeoutSecnds: 30

@@ -21,7 +21,11 @@ spec:
       initContainers:
        - name: wait-mysql
          image: alpine
-         command: ["sh", "-c", "for i in $(seq 1 300); do nc -zvw1 pinpoint-mysql 3306 && exit 0 || sleep 3; done; exit 1"]
+         command:
+           - sh
+           - -c
+           - >-
+             for i in $(seq 1 300); do nc -zvw1 {{ include "pinpoint-web.mysql.url" . }} {{ include "pinpoint-web.mysql.port" . }} && exit 0 || sleep 3; done; exit 1
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -35,22 +39,14 @@ spec:
               name: {{ template "pinpoint-web.fullname" . }}
           - secretRef:
               name: {{ template "pinpoint-web.fullname" . }}
+          {{- with .Values.livenessProbe }}
           livenessProbe:
-            failureThreshold: 3
-            tcpSocket:
-              port: {{ .Values.serverPort }}
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 2
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
           readinessProbe:
-            failureThreshold: 3
-            tcpSocket:
-              port: {{ .Values.serverPort }}
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 2
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
 {{- toYaml .Values.resources | nindent 12 }}
 {{- with .Values.affinity }}

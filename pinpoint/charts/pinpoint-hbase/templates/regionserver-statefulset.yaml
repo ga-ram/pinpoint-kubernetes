@@ -58,18 +58,22 @@ spec:
           value: {{ .Values.conf.hadoopUserName }}
         resources:
 {{ toYaml .Values.hbase.regionServer.resources | indent 10 }}
+        {{- if .Values.hbase.regionServer.readinessProbe.enabled }}
         readinessProbe:
           httpGet:
             path: /
             port: 16030
-          initialDelaySeconds: 5
-          timeoutSeconds: 2
+          initialDelaySeconds: {{ .Values.hbase.regionServer.readinessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.hbase.regionServer.readinessProbe.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.hbase.regionServer.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
             path: /
             port: 16030
-          initialDelaySeconds: 10
-          timeoutSeconds: 2
+          initialDelaySeconds: {{ .Values.hbase.regionServer.livenessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.hbase.regionServer.livenessProbe.timeoutSeconds }}
+        {{- end }}
         volumeMounts:
         - name: hbase-config
           mountPath: /tmp/hbase-config

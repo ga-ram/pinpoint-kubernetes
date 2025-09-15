@@ -4,12 +4,12 @@ metadata:
   name: {{ include "hbase.fullname" . }}
   labels:
     app.kubernetes.io/name: {{ include "hbase.name" . }}
-    {{- include "hbase.labels" . | nindent 4 }}
+{{- include "hbase.labels" . | nindent 4 }}
 data:
   bootstrap.sh: |
     #!/bin/bash
 
-    : ${HBASE_PREFIX:=/opt/hbase/hbase-1.2.6}
+    : ${HBASE_PREFIX:=/opt/hbase/hbase-2.2.6}
 
     . $HBASE_PREFIX/conf/hbase-env.sh
 

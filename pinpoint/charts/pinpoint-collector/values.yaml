@@ -17,10 +17,27 @@ tolerations: []
   #   value: "value"
   #   effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
 
+livenessProbe:
+  failureThreshold: 5
+  tcpSocket:
+    port: 9991
+  initialDelaySeconds: 300
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 2
+readinessProbe:
+  failureThreshold: 5
+  tcpSocket:
+    port: 9991
+  initialDelaySeconds: 300
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 2
+
 # Configuration for Docker Image 
 image:
   repository: pinpointdocker/pinpoint-collector
-  tag: 2.1.0
+  tag: 3.0.3
 
 service:
   type: "LoadBalancer"
@@ -38,8 +55,6 @@ receiver:
     spanPort: 9996
   
 profiles: release
-loggingLevelRoot: INFO
-clusterEnable: true
-flink:
-  enable: false
 
+zookeeper:
+  host: pinpoint-zookeeper

@@ -3,20 +3,26 @@ name: pinpoint
 description: A Helm chart for Pinpoint
 type: application
 # chart version. 
-version: 0.1.0
+version: 0.2.0
 # version number of the application being deployed. 
-appVersion: 2.1.0
+appVersion: 3.0.3
 # Dependecy for Pinpoint
 dependencies:
     - name: mysql
-      version: 1.6.7
-      repository: https://charts.helm.sh/stable
-      condition: mysql.enable
-    - name: hdfs
-      version: ~0.1.8
-      repository: https://gradiant.github.io/charts
-      condition: hdfs.enabled
+      version: 14.0.0
+      repository: https://charts.bitnami.com/bitnami
+      condition: mysql.enabled
     - name: zookeeper
-      version: ~2.1.0
-      repository: https://charts.helm.sh/incubator
+      version: 13.8.7
+      repository: https://charts.bitnami.com/bitnami
       condition: zookeeper.enabled
+    - name: hdfs
+      version: 0.1.10-1
+    - name: pinpoint-collector
+      version: 0.2.0
+    - name: pinpoint-hbase
+      version: 0.2.0
+    - name: pinpoint-web
+      version: 0.2.0
+    - name: pinpoint-batch
+      version: 0.2.0

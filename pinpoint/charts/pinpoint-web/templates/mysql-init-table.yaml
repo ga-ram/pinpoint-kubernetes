@@ -1,0 +1,51 @@
+{{- if .Values.mysql.createTables }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pinpoint-mysql-init-table
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: alpine
+          command:
+            - sh
+            - -c
+            - >-
+              for i in $(seq 1 300); do nc -zvw1 {{ include "pinpoint-web.mysql.url" . }} 3306 && exit 0 || sleep 3; done; exit 1
+      containers:
+        - name: mysql-client
+          image: bitnami/mysql:latest
+          env:
+            - name: MYSQL_HOST
+              value: {{ include "pinpoint-web.mysql.url" . }}
+            - name: MYSQL_PORT
+              value: '{{ include "pinpoint-web.mysql.port" . }}'
+            - name: MYSQL_DATABASE
+              value: "pinpoint"
+            - name: MYSQL_USER
+              value: {{ include "pinpoint-web.mysql.username" . }}
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pinpoint-pinpoint-web
+                  key: mysql-password
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              for SQL_FILE in /table-sql/*.sql; do
+                echo "Running $SQL_FILE..."
+                mysql -h $MYSQL_HOST -P $MYSQL_PORT -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE < "$SQL_FILE"
+              done
+          volumeMounts:
+            - name: pinpoint-mysql-table-config
+              mountPath: /table-sql
+      restartPolicy: OnFailure
+      volumes:
+        - name: pinpoint-mysql-table-config
+          configMap:
+            name: pinpoint-mysql-table-config
+{{- end }}
+
